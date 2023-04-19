@@ -1,9 +1,9 @@
-package infrastructure.repository;
+package com.jobsity.greetingsreminders.infrastructure.repository;
 
-import domain.model.ClassifiedPersons;
-import domain.model.Person;
-import domain.repository.PersonRepository;
-import infrastructure.shared.CustomFileReader;
+import com.jobsity.greetingsreminders.domain.model.ClassifiedPersons;
+import com.jobsity.greetingsreminders.domain.model.Person;
+import com.jobsity.greetingsreminders.domain.repository.PersonRepository;
+import com.jobsity.greetingsreminders.infrastructure.shared.CustomFileReader;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

@@ -1,4 +1,4 @@
-package domain.model;
+package com.jobsity.greetingsreminders.domain.model;
 
 
 import lombok.Builder;

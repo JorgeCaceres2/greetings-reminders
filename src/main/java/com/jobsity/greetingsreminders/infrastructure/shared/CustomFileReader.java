@@ -1,4 +1,4 @@
-package infrastructure.shared;
+package com.jobsity.greetingsreminders.infrastructure.shared;
 
 import java.io.BufferedReader;
 import java.io.IOException;

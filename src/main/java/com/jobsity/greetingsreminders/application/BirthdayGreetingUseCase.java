@@ -1,8 +1,8 @@
-package application;
+package com.jobsity.greetingsreminders.application;
 
-import domain.model.Person;
-import domain.repository.PersonRepository;
-import domain.service.BirthdayService;
+import com.jobsity.greetingsreminders.domain.model.Person;
+import com.jobsity.greetingsreminders.domain.repository.PersonRepository;
+import com.jobsity.greetingsreminders.domain.service.BirthdayService;
 import java.util.List;
 import org.springframework.stereotype.Component;
 

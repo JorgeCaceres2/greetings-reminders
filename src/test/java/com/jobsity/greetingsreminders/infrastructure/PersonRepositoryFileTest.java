@@ -1,9 +1,9 @@
 package com.jobsity.greetingsreminders.infrastructure;
 
 
-import domain.model.Person;
-import infrastructure.repository.PersonRepositoryFile;
-import infrastructure.shared.CustomFileReader;
+import com.jobsity.greetingsreminders.domain.model.Person;
+import com.jobsity.greetingsreminders.infrastructure.repository.PersonRepositoryFile;
+import com.jobsity.greetingsreminders.infrastructure.shared.CustomFileReader;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.Before;
