@@ -35,7 +35,7 @@ class BirthdayGreetingUseCaseTest {
     PersonRepository personRepository = new PersonRepositoryFile(customFileReader, config);
     BirthdayService birthdayService = new BirthdayServiceImpl(emailSender, smsSender, config);
     birthdayGreetingUseCase = new BirthdayGreetingUseCase(birthdayService, personRepository);
-
+    when(config.getFileDirectory()).thenReturn("friend-list.txt");
   }
 
   @Test
