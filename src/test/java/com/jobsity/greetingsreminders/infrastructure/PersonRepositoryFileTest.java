@@ -1,7 +1,11 @@
 package com.jobsity.greetingsreminders.infrastructure;
 
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import com.jobsity.greetingsreminders.domain.model.Person;
+import com.jobsity.greetingsreminders.infrastructure.configuration.Config;
 import com.jobsity.greetingsreminders.infrastructure.repository.PersonRepositoryFile;
 import com.jobsity.greetingsreminders.infrastructure.shared.CustomFileReader;
 import java.time.LocalDate;
@@ -17,10 +21,12 @@ public class PersonRepositoryFileTest {
 
   private final CustomFileReader customFileReader = new CustomFileReader();
   private PersonRepositoryFile personRepositoryFile;
+  private final Config config = mock(Config.class);
 
   @Before
   public void initMocks () {
-    personRepositoryFile = new PersonRepositoryFile(customFileReader);
+    personRepositoryFile = new PersonRepositoryFile(customFileReader, config);
+    when(config.getFileDirectory()).thenReturn("friend-list.txt");
   }
 
   @Test

@@ -3,6 +3,7 @@ package com.jobsity.greetingsreminders.infrastructure.repository;
 import com.jobsity.greetingsreminders.domain.model.ClassifiedPersons;
 import com.jobsity.greetingsreminders.domain.model.Person;
 import com.jobsity.greetingsreminders.domain.repository.PersonRepository;
+import com.jobsity.greetingsreminders.infrastructure.configuration.Config;
 import com.jobsity.greetingsreminders.infrastructure.shared.CustomFileReader;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -10,20 +11,22 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 
 @Component
+@Slf4j
 public class PersonRepositoryFile implements PersonRepository {
 
-  //private static final Logger logger = LoggerFactory.getLogger(PersonRepositoryFile.class);
   private final CustomFileReader customFileReader;
   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+  private final Config config;
 
-  public PersonRepositoryFile(CustomFileReader customFileReader) {
+
+  public PersonRepositoryFile(CustomFileReader customFileReader, Config config) {
     this.customFileReader = customFileReader;
+    this.config = config;
   }
 
   @Override
@@ -33,11 +36,13 @@ public class PersonRepositoryFile implements PersonRepository {
       friendList = getAllFriendsFromFile();
     } catch (IOException e) {
       //Assuming that the exception is not mandatory to handle
-      //logger.error("Invalid File, returning an empty person list");
+      log.error("Invalid File, returning an empty person list");
       return Collections.emptyList();
     }
     ClassifiedPersons classifiedPersons = getClassifiedPersons(friendList);
-    return classifiedPersons.getPersonToGreet();
+    List<Person> personsToGreet = classifiedPersons.getPersonToGreet();
+    log.info("Returning persons with birthday: {}", personsToGreet);
+    return personsToGreet;
   }
 
 
@@ -48,11 +53,11 @@ public class PersonRepositoryFile implements PersonRepository {
        personList = getAllFriendsFromFile();
     } catch (IOException e) {
       //Assuming that the exception is not mandatory to handle
-      //logger.error("Invalid File, returning an empty person list");
-      return null;
+      log.error("Invalid File, returning an empty person list");
+      return ClassifiedPersons.builder().build();
     }
-
     ClassifiedPersons classifiedPersons = getClassifiedPersons(personList);
+    log.info("Returning classified persons: {}", classifiedPersons);
     return classifiedPersons;
   }
 
@@ -80,12 +85,14 @@ public class PersonRepositoryFile implements PersonRepository {
         .personToGreet(personsToGreet)
         .build();
 
+    log.info("Returning classifiedPersons: {}", classifiedPersons);
     return classifiedPersons;
   }
 
 
   private List<Person> getAllFriendsFromFile() throws IOException {
-    List<String> lines = customFileReader.readFile("friend-list.txt");
+    String fileDirectory = config.getFileDirectory();
+    List<String> lines = customFileReader.readFile(fileDirectory);
     List<Person> friendList = new ArrayList<>();
     for (String line : lines) {
       String[] tokens = line.split(",");
@@ -99,7 +106,7 @@ public class PersonRepositoryFile implements PersonRepository {
       friendList.add(person);
     }
 
-    //logger.info("Returning results from file: {}", friendList);
+    log.info("Returning results from file: {}", friendList);
     return friendList;
   }
 }

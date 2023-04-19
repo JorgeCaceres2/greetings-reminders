@@ -21,21 +21,34 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
-class BirthdayGreetingUseCaseTest {
+class BirthdayReminderUseCaseTest {
 
   private final CustomFileReader customFileReader = new CustomFileReader();
   private final Config config = mock(Config.class);
   private final EmailSender emailSender = mock(EmailSender.class);
   private final SmsSender smsSender = mock(SmsSender.class);
-  private BirthdayGreetingUseCase birthdayGreetingUseCase;
+  private BirthdayReminderUseCase birthdayReminderUseCase;
 
 
   @BeforeEach
   void initTest () {
     PersonRepository personRepository = new PersonRepositoryFile(customFileReader, config);
     BirthdayService birthdayService = new BirthdayServiceImpl(emailSender, smsSender, config);
-    birthdayGreetingUseCase = new BirthdayGreetingUseCase(birthdayService, personRepository);
+    birthdayReminderUseCase = new BirthdayReminderUseCase(birthdayService, personRepository);
+  }
 
+  @Test
+  void shouldSendBirthdayGreetings() {
+    LocalDate mockedDate = LocalDate.of(2023,2,28);
+    try (MockedStatic<LocalDate> mockedLocalDate = Mockito.mockStatic(LocalDate.class, Mockito.CALLS_REAL_METHODS)) {
+      when(config.getReminderMessage()).thenReturn("Dear '%s', \\nToday is '%s' '%s''s birthday.\\n\\tDon't forget to sem him a message!");
+      when(config.getReminderSubject()).thenReturn("Birthday Reminder");
+      mockedLocalDate.when(LocalDate::now).thenReturn(mockedDate);
+      birthdayReminderUseCase.sendBirthdayReminders();
+
+      verify(emailSender, times(2)).sendEmail(anyString(), anyString(), anyString());
+      verify(smsSender, times (2)).sendMessage(anyString(), anyString());
+    }
   }
 
   @Test
@@ -43,26 +56,10 @@ class BirthdayGreetingUseCaseTest {
     LocalDate mockedDate = LocalDate.of(2023,1,1);
     try (MockedStatic<LocalDate> mockedLocalDate = Mockito.mockStatic(LocalDate.class, Mockito.CALLS_REAL_METHODS)) {
       mockedLocalDate.when(LocalDate::now).thenReturn(mockedDate);
-      birthdayGreetingUseCase.sendBirthdayGreetings();
+      birthdayReminderUseCase.sendBirthdayReminders();
 
       verify(emailSender, never()).sendEmail(anyString(), anyString(), anyString());
       verify(smsSender, never()).sendMessage(anyString(), anyString());
-    }
-  }
-
-  @Test
-  void shouldSendBirthdayGreetings() {
-    LocalDate mockedDate = LocalDate.of(2023,2,28);
-    try (MockedStatic<LocalDate> mockedLocalDate = Mockito.mockStatic(LocalDate.class, Mockito.CALLS_REAL_METHODS)) {
-      String msg = "Happy birthday, dear %s!";
-      String subject = "Happy birthday!";
-      when(config.getBirthdayMessage()).thenReturn(msg);
-      when(config.getBirthdaySubject()).thenReturn(subject);
-      mockedLocalDate.when(LocalDate::now).thenReturn(mockedDate);
-      birthdayGreetingUseCase.sendBirthdayGreetings();
-
-      verify(emailSender, times(1)).sendEmail("mary.ann@foobar.com", "Happy birthday!", "Happy birthday, dear Mary!");
-      verify(smsSender, times (1)).sendMessage(anyString(), anyString());
     }
   }
 }
