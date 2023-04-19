@@ -1,0 +1,3 @@
+Doe, John, 1982/04/17, john.doe@foobar.com, +5901233
+Ann, Mary, 1975/02/29, mary.ann@foobar.com, +594322
+Tire, Mike, 1986/04/19, mike.tire@foobar.com, +532344
