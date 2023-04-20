@@ -1,6 +1,5 @@
 package com.jobsity.greetingsreminders.infrastructure.service;
 
-import com.jobsity.greetingsreminders.domain.model.ClassifiedPersons;
 import com.jobsity.greetingsreminders.domain.model.Person;
 import com.jobsity.greetingsreminders.domain.service.BirthdayService;
 import com.jobsity.greetingsreminders.infrastructure.configuration.Config;
@@ -35,19 +34,19 @@ public class BirthdayServiceImpl implements BirthdayService {
   }
 
   @Override
-  public void birthdayReminders(ClassifiedPersons classifiedPersons) {
-    List<Person> personsToReminders = classifiedPersons.getPersonsToReminders();
-    List<Person> personsToGreet = classifiedPersons.getPersonToGreet();
+  public void birthdayReminders(List<Person> friendList, List<Person> friendsToGreet) {
     String reminderEmailMessage = config.getReminderMessage();
     String reminderEmailSubject = config.getReminderSubject();
 
-    for (Person personToGreet : personsToGreet) {
-      for (Person personToReminder : personsToReminders) {
-        String reminderMessage = String.format(reminderEmailMessage, personToReminder.getFirstname(), personToGreet.getFirstname(), personToGreet.getLastName());
-        emailSender.sendEmail(personToReminder.getEmail(), reminderEmailSubject, reminderMessage);
-        smsSender.sendMessage(personToReminder.getPhoneNumber(), reminderMessage);
+    for (Person personToGreet : friendsToGreet) {
+      for (Person personToReminder : friendList) {
+        if (!personToGreet.equals(personToReminder)) {
+          String reminderMessage = String.format(reminderEmailMessage, personToReminder.getFirstname(), personToGreet.getFirstname(),
+              personToGreet.getLastName());
+          emailSender.sendEmail(personToReminder.getEmail(), reminderEmailSubject, reminderMessage);
+          smsSender.sendMessage(personToReminder.getPhoneNumber(), reminderMessage);
+        }
       }
     }
   }
-
 }

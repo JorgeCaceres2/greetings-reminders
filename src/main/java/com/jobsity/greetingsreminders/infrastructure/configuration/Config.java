@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class Config {
 
+  private String personRepositorySource;
   private String birthdayMessage;
   private String birthdaySubject;
   private String reminderMessage;

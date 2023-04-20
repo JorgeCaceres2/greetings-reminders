@@ -1,8 +1,8 @@
 package com.jobsity.greetingsreminders.application;
 
 import com.jobsity.greetingsreminders.domain.model.Person;
-import com.jobsity.greetingsreminders.domain.repository.PersonRepository;
 import com.jobsity.greetingsreminders.domain.service.BirthdayService;
+import com.jobsity.greetingsreminders.infrastructure.repository.PersonRepositoryFactory;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
@@ -10,15 +10,15 @@ import org.springframework.stereotype.Component;
 public class BirthdayGreetingUseCase {
 
   private final BirthdayService birthdayService;
-  private final PersonRepository personRepository;
+  private final PersonRepositoryFactory personRepositoryFactory;
 
-  public BirthdayGreetingUseCase(BirthdayService birthdayService, PersonRepository personRepository) {
+  public BirthdayGreetingUseCase(BirthdayService birthdayService, PersonRepositoryFactory personRepositoryFactory) {
     this.birthdayService = birthdayService;
-    this.personRepository = personRepository;
+    this.personRepositoryFactory = personRepositoryFactory;
   }
 
   void sendBirthdayGreetings () {
-    List<Person> personList = personRepository.getPersonsWithBirthday();
+    List<Person> personList = personRepositoryFactory.getRepository().getPersonsToGreet();
     birthdayService.birthdayGreetings(personList);
   }
 }

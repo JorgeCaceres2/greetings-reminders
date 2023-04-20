@@ -1,6 +1,7 @@
 package com.jobsity.greetingsreminders.domain.model;
 
 
+import java.time.LocalDate;
 import lombok.Builder;
 import lombok.Data;
 
@@ -9,7 +10,7 @@ import lombok.Data;
 public class Person {
   private String firstname;
   private String lastName;
-  private String dateOfBirth;
+  private LocalDate dateOfBirth;
   private String email;
   private String phoneNumber;
 }
