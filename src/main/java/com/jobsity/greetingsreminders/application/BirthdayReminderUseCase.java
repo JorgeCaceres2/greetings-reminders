@@ -5,9 +5,11 @@ import com.jobsity.greetingsreminders.domain.model.Person;
 import com.jobsity.greetingsreminders.domain.service.BirthdayService;
 import com.jobsity.greetingsreminders.infrastructure.repository.PersonRepositoryFactory;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class BirthdayReminderUseCase {
 
   private final BirthdayService birthdayService;
@@ -21,8 +23,10 @@ public class BirthdayReminderUseCase {
   }
 
   public void sendBirthdayReminders () {
+    log.info("Starting BirthdayReminderUseCase");
     List<Person> friendList = personRepositoryFactory.getRepository().getAllPersons();
     List<Person> friendsToGreet = personRepositoryFactory.getRepository().getPersonsToGreet();
     birthdayService.birthdayReminders(friendList, friendsToGreet);
+    log.info("End of BirthdayReminderUseCase");
   }
 }

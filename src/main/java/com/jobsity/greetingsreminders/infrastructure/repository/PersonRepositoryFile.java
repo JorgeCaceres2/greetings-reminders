@@ -58,7 +58,7 @@ public class PersonRepositoryFile implements PersonRepository {
   public List<Person> getAllPersons() {
     try {
       List<Person> personList = getAllFriendsFromFile();
-      log.info("Returning all friends existing in file: {}", personList);
+      log.info("Returning all existing friends in file: {}", personList);
       return personList;
     } catch (IOException e) {
       //Assuming that the exception is not mandatory to handle
