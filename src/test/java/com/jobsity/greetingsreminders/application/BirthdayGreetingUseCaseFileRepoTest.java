@@ -19,7 +19,6 @@ import com.jobsity.greetingsreminders.infrastructure.shared.SmsSender;
 import com.jobsity.greetingsreminders.infrastructure.transformer.PersonTransformer;
 import java.time.LocalDate;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,34 +27,33 @@ import org.springframework.context.annotation.Import;
 
 @SpringBootTest
 @Import(TestConfig.class)
-class BirthdayGreetingUseCaseSqlRepoTest {
+class BirthdayGreetingUseCaseFileRepoTest {
 
   private final CustomFileReader customFileReader = new CustomFileReader();
   private final PersonTransformer personTransformer = new PersonTransformer();
+  private final EntityManager entityManager = mock(EntityManager.class);
   private final Config config = mock(Config.class);
   private final EmailSender emailSender = mock(EmailSender.class);
   private final SmsSender smsSender = mock(SmsSender.class);
   private final DateUtils dateUtils = mock(DateUtils.class);
   private BirthdayGreetingUseCase birthdayGreetingUseCase;
-  @PersistenceContext
-  private EntityManager entityManager;
   @Autowired
   private TestConfig testConfig;
-
 
   @BeforeEach
   void initTest() {
     PersonRepositoryFactory personRepositoryFactory = new PersonRepositoryFactory(config, dateUtils, customFileReader, personTransformer,
         entityManager);
     BirthdayService birthdayService = new BirthdayServiceImpl(emailSender, smsSender, config);
-    birthdayGreetingUseCase = new BirthdayGreetingUseCase(birthdayService,personRepositoryFactory);
-    when(config.getPersonRepositorySource()).thenReturn("SQLite");
+    birthdayGreetingUseCase = new BirthdayGreetingUseCase(birthdayService, personRepositoryFactory);
+    when(config.getPersonRepositorySource()).thenReturn("File");
+    when(config.getFileDirectory()).thenReturn(testConfig.getFileDirectory());
     when(config.getBirthdayMessage()).thenReturn(testConfig.getBirthdayMessage());
     when(config.getBirthdaySubject()).thenReturn(testConfig.getBirthdaySubject());
   }
 
   @Test
-  void shouldSendBirthdayGreetingsSqlRepo() {
+  void shouldSendBirthdayGreetingsFileRepo() {
     LocalDate mockedDate = LocalDate.of(2023, 4, 19);
     when(dateUtils.getCurrentDate()).thenReturn(mockedDate);
     birthdayGreetingUseCase.sendBirthdayGreetings();
@@ -69,7 +67,7 @@ class BirthdayGreetingUseCaseSqlRepoTest {
   }
 
   @Test
-  void shouldSendBirthdayGreetingsSqlRepoFeb28Case() {
+  void shouldSendBirthdayGreetingsFileRepoFeb28Case() {
     LocalDate mockedDate = LocalDate.of(2023, 2, 28);
     when(dateUtils.getCurrentDate()).thenReturn(mockedDate);
     birthdayGreetingUseCase.sendBirthdayGreetings();
@@ -86,6 +84,17 @@ class BirthdayGreetingUseCaseSqlRepoTest {
   void shouldNotSendBirthdayGreetingsFileRepo() {
     LocalDate mockedDate = LocalDate.of(2023, 1, 1);
     when(dateUtils.getCurrentDate()).thenReturn(mockedDate);
+    birthdayGreetingUseCase.sendBirthdayGreetings();
+
+    verify(emailSender, never()).sendEmail(anyString(), anyString(), anyString());
+    verify(smsSender, never()).sendMessage(anyString(), anyString());
+  }
+
+  @Test
+  void shouldNotSendBirthdayGreetingsFileRepoInvalidFile() {
+    LocalDate mockedDate = LocalDate.of(2023, 1, 1);
+    when(dateUtils.getCurrentDate()).thenReturn(mockedDate);
+    when(config.getFileDirectory()).thenReturn("x.txt");
     birthdayGreetingUseCase.sendBirthdayGreetings();
 
     verify(emailSender, never()).sendEmail(anyString(), anyString(), anyString());

@@ -25,7 +25,7 @@ public class PersonRepositoryFile implements PersonRepository {
 
   private final DateUtils dateUtils;
   private final CustomFileReader customFileReader;
-  private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+  private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
   private final Config config;
 
   public PersonRepositoryFile(DateUtils dateUtils, CustomFileReader customFileReader,

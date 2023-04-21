@@ -1,4 +1,4 @@
-package com.jobsity.greetingsreminders.infrastructure;
+package com.jobsity.greetingsreminders.infrastructure.repository;
 
 
 import static org.mockito.Mockito.mock;
@@ -6,7 +6,6 @@ import static org.mockito.Mockito.when;
 
 import com.jobsity.greetingsreminders.domain.model.Person;
 import com.jobsity.greetingsreminders.infrastructure.configuration.Config;
-import com.jobsity.greetingsreminders.infrastructure.repository.PersonRepositoryFile;
 import com.jobsity.greetingsreminders.infrastructure.shared.CustomFileReader;
 import com.jobsity.greetingsreminders.infrastructure.shared.DateUtils;
 import java.time.LocalDate;
@@ -16,7 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
-public class PersonRepositoryFileTest {
+class PersonRepositoryFileTest {
 
   private final CustomFileReader customFileReader = new CustomFileReader();
   private final Config config = mock(Config.class);
@@ -30,7 +29,7 @@ public class PersonRepositoryFileTest {
   }
 
   @Test
-  public void getPersonsWithBirthday() {
+  void getPersonsWithBirthday() {
     LocalDate defaultLocalDate = LocalDate.of(2023, 4, 17);
     when(dateUtils.getCurrentDate()).thenReturn(defaultLocalDate);
     Person expectedPerson = getExpectedPerson();
@@ -40,13 +39,21 @@ public class PersonRepositoryFileTest {
   }
 
   @Test
-  public void getPersonsWithBirthdayInFeb28() {
+  void getPersonsWithBirthdayInFeb28() {
     LocalDate defaultLocalDate = LocalDate.of(2023, 2, 28);
     when(dateUtils.getCurrentDate()).thenReturn(defaultLocalDate);
     Person expectedPerson = getExpectedPersonForFeb29();
     List<Person> personsWithBirthday = personRepositoryFile.getPersonsToGreet();
 
     Assertions.assertEquals(expectedPerson, personsWithBirthday.get(0));
+  }
+
+  @Test
+  void invalidFileShouldReturnEmpty () {
+    when(config.getFileDirectory()).thenReturn("x.txt");
+    List<Person> personsWithBirthday = personRepositoryFile.getPersonsToGreet();
+
+    Assertions.assertTrue(personsWithBirthday.isEmpty());
   }
 
 

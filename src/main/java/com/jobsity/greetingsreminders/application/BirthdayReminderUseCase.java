@@ -2,7 +2,6 @@ package com.jobsity.greetingsreminders.application;
 
 
 import com.jobsity.greetingsreminders.domain.model.Person;
-import com.jobsity.greetingsreminders.domain.repository.PersonRepository;
 import com.jobsity.greetingsreminders.domain.service.BirthdayService;
 import com.jobsity.greetingsreminders.infrastructure.repository.PersonRepositoryFactory;
 import java.util.List;
@@ -21,7 +20,7 @@ public class BirthdayReminderUseCase {
     this.personRepositoryFactory = personRepositoryFactory;
   }
 
-  void sendBirthdayReminders () {
+  public void sendBirthdayReminders () {
     List<Person> friendList = personRepositoryFactory.getRepository().getAllPersons();
     List<Person> friendsToGreet = personRepositoryFactory.getRepository().getPersonsToGreet();
     birthdayService.birthdayReminders(friendList, friendsToGreet);

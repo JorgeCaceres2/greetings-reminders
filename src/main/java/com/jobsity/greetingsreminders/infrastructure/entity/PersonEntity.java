@@ -1,12 +1,10 @@
 package com.jobsity.greetingsreminders.infrastructure.entity;
 
-import static javax.persistence.GenerationType.SEQUENCE;
-
+import java.time.LocalDate;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import java.time.LocalDate;
 import lombok.Builder;
 import lombok.Data;
 
@@ -17,20 +15,26 @@ import lombok.Data;
 public class PersonEntity {
 
   @Id
-  @SequenceGenerator(
-      name="person_sequence",
-      sequenceName = "person_sequence",
-      allocationSize = 1
-  )
-  @GeneratedValue(
-      strategy = SEQUENCE,
-      generator = "person_sequence"
-  )
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   private String firstName;
   private String lastName;
   private LocalDate dateOfBirth;
   private String email;
   private String phoneNumber;
+
+
+  public PersonEntity () {
+    //required by jpa
+  }
+
+  public PersonEntity(Long id, String firstName, String lastName, LocalDate dateOfBirth, String email, String phoneNumber) {
+    this.id = id;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.dateOfBirth = dateOfBirth;
+    this.email = email;
+    this.phoneNumber = phoneNumber;
+  }
 
 }

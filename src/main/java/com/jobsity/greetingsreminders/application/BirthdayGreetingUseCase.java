@@ -17,7 +17,7 @@ public class BirthdayGreetingUseCase {
     this.personRepositoryFactory = personRepositoryFactory;
   }
 
-  void sendBirthdayGreetings () {
+  public void sendBirthdayGreetings () {
     List<Person> personList = personRepositoryFactory.getRepository().getPersonsToGreet();
     birthdayService.birthdayGreetings(personList);
   }

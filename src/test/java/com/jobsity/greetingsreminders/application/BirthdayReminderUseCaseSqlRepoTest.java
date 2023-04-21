@@ -1,6 +1,8 @@
 package com.jobsity.greetingsreminders.application;
 
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -28,7 +30,7 @@ import org.springframework.context.annotation.Import;
 
 @SpringBootTest
 @Import(TestConfig.class)
-class BirthdayGreetingUseCaseSqlRepoTest {
+class BirthdayReminderUseCaseSqlRepoTest {
 
   private final CustomFileReader customFileReader = new CustomFileReader();
   private final PersonTransformer personTransformer = new PersonTransformer();
@@ -36,57 +38,53 @@ class BirthdayGreetingUseCaseSqlRepoTest {
   private final EmailSender emailSender = mock(EmailSender.class);
   private final SmsSender smsSender = mock(SmsSender.class);
   private final DateUtils dateUtils = mock(DateUtils.class);
-  private BirthdayGreetingUseCase birthdayGreetingUseCase;
+  private BirthdayReminderUseCase birthdayReminderUseCase;
   @PersistenceContext
   private EntityManager entityManager;
   @Autowired
   private TestConfig testConfig;
-
+  private String expectedMessage;
+  private String expectedSubject;
 
   @BeforeEach
   void initTest() {
     PersonRepositoryFactory personRepositoryFactory = new PersonRepositoryFactory(config, dateUtils, customFileReader, personTransformer,
         entityManager);
     BirthdayService birthdayService = new BirthdayServiceImpl(emailSender, smsSender, config);
-    birthdayGreetingUseCase = new BirthdayGreetingUseCase(birthdayService,personRepositoryFactory);
+    birthdayReminderUseCase = new BirthdayReminderUseCase(birthdayService,personRepositoryFactory);
+    expectedMessage = "Don't forget to sem him a message!";
+    expectedSubject = testConfig.getReminderSubject();
     when(config.getPersonRepositorySource()).thenReturn("SQLite");
-    when(config.getBirthdayMessage()).thenReturn(testConfig.getBirthdayMessage());
-    when(config.getBirthdaySubject()).thenReturn(testConfig.getBirthdaySubject());
+    when(config.getReminderMessage()).thenReturn(testConfig.getReminderMessage());
+    when(config.getReminderSubject()).thenReturn(testConfig.getReminderSubject());
+
   }
 
   @Test
-  void shouldSendBirthdayGreetingsSqlRepo() {
-    LocalDate mockedDate = LocalDate.of(2023, 4, 19);
+  void shouldSendBirthdayRemindersSqlRepo() {
+    LocalDate mockedDate = LocalDate.of(2023, 4, 17);
     when(dateUtils.getCurrentDate()).thenReturn(mockedDate);
-    birthdayGreetingUseCase.sendBirthdayGreetings();
-    String expectedMail = "mike.tire@foobar.com";
-    String expectedSubject = "Happy birthday!";
-    String expectedMessage = "Happy birthday, dear Mike!";
-    String expectedPhoneNumber = "+532344";
+    birthdayReminderUseCase.sendBirthdayReminders();
 
-    verify(emailSender, times(1)).sendEmail(expectedMail, expectedSubject, expectedMessage);
-    verify(smsSender, times(1)).sendMessage(expectedPhoneNumber, expectedMessage);
+    verify(emailSender, times(2)).sendEmail(anyString(), eq(expectedSubject),contains(expectedMessage));
+    verify(smsSender, times(2)).sendMessage(anyString(), contains(expectedMessage));
   }
 
   @Test
-  void shouldSendBirthdayGreetingsSqlRepoFeb28Case() {
+  void shouldSendBirthdayRemindersSqlRepoFeb28Case() {
     LocalDate mockedDate = LocalDate.of(2023, 2, 28);
     when(dateUtils.getCurrentDate()).thenReturn(mockedDate);
-    birthdayGreetingUseCase.sendBirthdayGreetings();
-    String expectedMail = "mary.ann@foobar.com";
-    String expectedSubject = "Happy birthday!";
-    String expectedMessage = "Happy birthday, dear Mary!";
-    String expectedPhoneNumber = "+594322";
+    birthdayReminderUseCase.sendBirthdayReminders();
 
-    verify(emailSender, times(1)).sendEmail(expectedMail, expectedSubject, expectedMessage);
-    verify(smsSender, times(1)).sendMessage(expectedPhoneNumber, expectedMessage);
+    verify(emailSender, times(2)).sendEmail(anyString(), eq(expectedSubject),contains(expectedMessage));
+    verify(smsSender, times(2)).sendMessage(anyString(), contains(expectedMessage));
   }
 
   @Test
-  void shouldNotSendBirthdayGreetingsFileRepo() {
+  void shouldNotSendBirthdayRemindersSqlRepo() {
     LocalDate mockedDate = LocalDate.of(2023, 1, 1);
     when(dateUtils.getCurrentDate()).thenReturn(mockedDate);
-    birthdayGreetingUseCase.sendBirthdayGreetings();
+    birthdayReminderUseCase.sendBirthdayReminders();
 
     verify(emailSender, never()).sendEmail(anyString(), anyString(), anyString());
     verify(smsSender, never()).sendMessage(anyString(), anyString());

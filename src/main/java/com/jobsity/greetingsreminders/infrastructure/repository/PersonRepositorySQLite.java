@@ -12,7 +12,9 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import javax.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 
 @Slf4j
@@ -20,18 +22,20 @@ import lombok.extern.slf4j.Slf4j;
 //    value="person.repository.source",
 //    havingValue = "SQLite",
 //matchIfMissing = false)
+@Component
 public class PersonRepositorySQLite implements PersonRepository {
 
 
   @PersistenceContext
-  private EntityManager entityManager;
+  private final EntityManager entityManager;
 
   private final PersonTransformer personTransformerToDomain;
   private final DateUtils dateUtils;
 
 
-  public PersonRepositorySQLite(PersonTransformer personTransformerToDomain,
+  public PersonRepositorySQLite(EntityManager entityManager, PersonTransformer personTransformerToDomain,
       DateUtils dateUtils) {
+    this.entityManager = entityManager;
     this.personTransformerToDomain = personTransformerToDomain;
     this.dateUtils = dateUtils;
   }
@@ -39,16 +43,20 @@ public class PersonRepositorySQLite implements PersonRepository {
 
   public List<Person> getPersonsToGreet() {
     List<PersonEntity> personEntityList = findPersonsToGreet();
-    return personEntityList.stream()
+    List<Person> personList = personEntityList.stream()
         .map(personTransformerToDomain::transformToPerson)
         .collect(Collectors.toList());
+    log.info("Returning persons to greet results: {}", personList);
+    return personList;
   }
 
   public List<Person> getAllPersons() {
     List<PersonEntity> personEntityList = findAll();
-    return personEntityList.stream()
+    List<Person> allPersonList = personEntityList.stream()
         .map(personTransformerToDomain::transformToPerson)
         .collect(Collectors.toList());
+    log.info("Returning all existing persons results: {}", allPersonList);
+    return allPersonList;
   }
 
   private List<PersonEntity> findAll() {
@@ -60,19 +68,35 @@ public class PersonRepositorySQLite implements PersonRepository {
     LocalDate today = dateUtils.getCurrentDate();
     int day = today.getDayOfMonth();
     int month = today.getMonthValue();
+
+//    If today is feb-29, yesterday we already sent greetings and reminders
+//    If we want to avoid double notifications, uncomment this validation
+//    if (month == 2 && day == 29) {
+//      return List.of();
+//    }
+
+    TypedQuery<PersonEntity> query;
     StringBuilder sb = new StringBuilder();
-    sb.append("SELECT p FROM Person p WHERE (DAY(p.dateOfBirth) = :day AND MONTH(p.dateOfBirth) = :month)");
+    sb.append("SELECT p FROM Person p ");
+    sb.append("WHERE (cast(substr(p.dateOfBirth, 9, 2) as integer) = :day AND cast(substr(p.dateOfBirth, 6, 2) as integer) = :month) ");
 
     if (month == 2 && day == 28) {
-      sb.append("OR (DAY(p.dateOfBirth) = :leapDay AND MONTH(p.dateOfBirth) = :month)");
+      sb.append("OR (cast(substr(p.dateOfBirth, 9, 2) as integer) = :day + 1 AND cast(substr(p.dateOfBirth, 6, 2) as integer) = :month)");
     }
 
-    TypedQuery<PersonEntity> query = entityManager.createQuery(sb.toString(), PersonEntity.class);
+    query = entityManager.createQuery(sb.toString(), PersonEntity.class);
     query.setParameter("day", day);
     query.setParameter("month", month);
-    query.setParameter("leapDay", day + 1);
 
     return query.getResultList();
+  }
+
+
+  //out of scope - this is just for startup population  - Testing purposes
+  @Transactional
+  public void addPerson (PersonEntity personEntity) {
+    entityManager.persist(personEntity);
+    entityManager.flush();
   }
 
 }

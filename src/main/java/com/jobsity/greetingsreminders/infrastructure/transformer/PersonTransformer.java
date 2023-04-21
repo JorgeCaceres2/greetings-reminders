@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 public class PersonTransformer {
 
   public Person transformToPerson(PersonEntity personEntity) {
+
     return Person.builder()
         .lastName(personEntity.getLastName())
         .firstname(personEntity.getFirstName())
