@@ -11,15 +11,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 @Slf4j
-//@ConditionalOnProperty(
-//    value="person.repository.source",
-//    havingValue = "File",
-//    matchIfMissing = true)
 @Component
 public class PersonRepositoryFile implements PersonRepository {
 

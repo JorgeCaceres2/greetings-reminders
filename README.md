@@ -21,6 +21,7 @@ e.g.:
 Doe, John, 1982-10-08, john.doe@foobar.com, +5901233
 
 ## Test cases
+- See test's outputs in folder test-output
 - Into the project folder you can run in terminal: mvn test. You will see logs results for File and SQLite repositories.
 - Person table is populated with the same import.sql script
 - File repository for test's is in test/resources folder

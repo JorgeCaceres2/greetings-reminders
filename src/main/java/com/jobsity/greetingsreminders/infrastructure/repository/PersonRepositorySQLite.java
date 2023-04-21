@@ -18,10 +18,6 @@ import org.springframework.stereotype.Component;
 
 
 @Slf4j
-//@ConditionalOnProperty(
-//    value="person.repository.source",
-//    havingValue = "SQLite",
-//matchIfMissing = false)
 @Component
 public class PersonRepositorySQLite implements PersonRepository {
 
