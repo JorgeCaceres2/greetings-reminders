@@ -3,7 +3,6 @@ package com.jobsity.greetingsreminders.infrastructure.repository;
 import com.jobsity.greetingsreminders.domain.model.Person;
 import com.jobsity.greetingsreminders.domain.repository.PersonRepository;
 import com.jobsity.greetingsreminders.infrastructure.entity.PersonEntity;
-
 import com.jobsity.greetingsreminders.infrastructure.shared.DateUtils;
 import com.jobsity.greetingsreminders.infrastructure.transformer.PersonTransformer;
 import java.time.LocalDate;
@@ -12,7 +11,6 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import javax.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -85,14 +83,6 @@ public class PersonRepositorySQLite implements PersonRepository {
     query.setParameter("month", month);
 
     return query.getResultList();
-  }
-
-
-  //out of scope - this is just for startup population  - Testing purposes
-  @Transactional
-  public void addPerson (PersonEntity personEntity) {
-    entityManager.persist(personEntity);
-    entityManager.flush();
   }
 
 }

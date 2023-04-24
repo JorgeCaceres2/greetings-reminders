@@ -1,9 +1,9 @@
 package com.jobsity.greetingsreminders.application;
 
 
+import com.jobsity.greetingsreminders.domain.factory.PersonRepositoryFactory;
 import com.jobsity.greetingsreminders.domain.model.Person;
 import com.jobsity.greetingsreminders.domain.service.BirthdayService;
-import com.jobsity.greetingsreminders.infrastructure.repository.PersonRepositoryFactory;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

@@ -7,10 +7,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.jobsity.greetingsreminders.domain.factory.PersonRepositoryFactory;
 import com.jobsity.greetingsreminders.domain.service.BirthdayService;
 import com.jobsity.greetingsreminders.infrastructure.configuration.Config;
 import com.jobsity.greetingsreminders.infrastructure.configuration.TestConfig;
-import com.jobsity.greetingsreminders.infrastructure.repository.PersonRepositoryFactory;
+import com.jobsity.greetingsreminders.infrastructure.factory.PersonRepositoryFactoryImpl;
 import com.jobsity.greetingsreminders.infrastructure.service.BirthdayServiceImpl;
 import com.jobsity.greetingsreminders.infrastructure.shared.CustomFileReader;
 import com.jobsity.greetingsreminders.infrastructure.shared.DateUtils;
@@ -45,7 +46,7 @@ class BirthdayGreetingUseCaseSqlRepoTest {
 
   @BeforeEach
   void initTest() {
-    PersonRepositoryFactory personRepositoryFactory = new PersonRepositoryFactory(config, dateUtils, customFileReader, personTransformer,
+    PersonRepositoryFactory personRepositoryFactory = new PersonRepositoryFactoryImpl(config, dateUtils, customFileReader, personTransformer,
         entityManager);
     BirthdayService birthdayService = new BirthdayServiceImpl(emailSender, smsSender, config);
     birthdayGreetingUseCase = new BirthdayGreetingUseCase(birthdayService,personRepositoryFactory);
