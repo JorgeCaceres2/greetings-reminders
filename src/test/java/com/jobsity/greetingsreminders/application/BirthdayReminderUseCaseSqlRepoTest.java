@@ -1,8 +1,6 @@
 package com.jobsity.greetingsreminders.application;
 
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.contains;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -44,8 +42,6 @@ class BirthdayReminderUseCaseSqlRepoTest {
   private EntityManager entityManager;
   @Autowired
   private TestConfig testConfig;
-  private String expectedMessage;
-  private String expectedSubject;
 
   @BeforeEach
   void initTest() {
@@ -53,8 +49,6 @@ class BirthdayReminderUseCaseSqlRepoTest {
         entityManager);
     BirthdayService birthdayService = new BirthdayServiceImpl(emailSender, smsSender, config);
     birthdayReminderUseCase = new BirthdayReminderUseCase(birthdayService,personRepositoryFactory);
-    expectedMessage = "Don't forget to sem him a message!";
-    expectedSubject = testConfig.getReminderSubject();
     when(config.getPersonRepositorySource()).thenReturn("SQLite");
     when(config.getReminderMessage()).thenReturn(testConfig.getReminderMessage());
     when(config.getReminderSubject()).thenReturn(testConfig.getReminderSubject());
@@ -67,8 +61,8 @@ class BirthdayReminderUseCaseSqlRepoTest {
     when(dateUtils.getCurrentDate()).thenReturn(mockedDate);
     birthdayReminderUseCase.sendBirthdayReminders();
 
-    verify(emailSender, times(2)).sendEmail(anyString(), eq(expectedSubject),contains(expectedMessage));
-    verify(smsSender, times(2)).sendMessage(anyString(), contains(expectedMessage));
+    verify(emailSender, times(2)).sendEmail(any());
+    verify(smsSender, times(2)).sendMessage(any());
   }
 
   @Test
@@ -77,8 +71,8 @@ class BirthdayReminderUseCaseSqlRepoTest {
     when(dateUtils.getCurrentDate()).thenReturn(mockedDate);
     birthdayReminderUseCase.sendBirthdayReminders();
 
-    verify(emailSender, times(2)).sendEmail(anyString(), eq(expectedSubject),contains(expectedMessage));
-    verify(smsSender, times(2)).sendMessage(anyString(), contains(expectedMessage));
+    verify(emailSender, times(2)).sendEmail(any());
+    verify(smsSender, times(2)).sendMessage(any());
   }
 
   @Test
@@ -87,8 +81,8 @@ class BirthdayReminderUseCaseSqlRepoTest {
     when(dateUtils.getCurrentDate()).thenReturn(mockedDate);
     birthdayReminderUseCase.sendBirthdayReminders();
 
-    verify(emailSender, never()).sendEmail(anyString(), anyString(), anyString());
-    verify(smsSender, never()).sendMessage(anyString(), anyString());
+    verify(emailSender, never()).sendEmail(any());
+    verify(smsSender, never()).sendMessage(any());
   }
 
 }

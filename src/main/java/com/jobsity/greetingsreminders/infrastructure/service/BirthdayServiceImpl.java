@@ -3,6 +3,8 @@ package com.jobsity.greetingsreminders.infrastructure.service;
 import com.jobsity.greetingsreminders.domain.model.Person;
 import com.jobsity.greetingsreminders.domain.service.BirthdayService;
 import com.jobsity.greetingsreminders.infrastructure.configuration.Config;
+import com.jobsity.greetingsreminders.infrastructure.dto.EmailDTO;
+import com.jobsity.greetingsreminders.infrastructure.dto.SmsDTO;
 import com.jobsity.greetingsreminders.infrastructure.shared.EmailSender;
 import com.jobsity.greetingsreminders.infrastructure.shared.SmsSender;
 import java.util.List;
@@ -28,8 +30,8 @@ public class BirthdayServiceImpl implements BirthdayService {
 
     for (Person person : personsToGreet) {
       String birthdayMessage = String.format(birthdayEmailMessage, person.getFirstname());
-      emailSender.sendEmail(person.getEmail(), birthdayEmailSubject, birthdayMessage);
-      smsSender.sendMessage(person.getPhoneNumber(), birthdayMessage);
+      emailSender.sendEmail(new EmailDTO(person.getEmail(), birthdayEmailSubject, birthdayMessage));
+      smsSender.sendMessage(new SmsDTO(person.getPhoneNumber(), birthdayMessage));
     }
   }
 
@@ -43,8 +45,8 @@ public class BirthdayServiceImpl implements BirthdayService {
         if (!personToGreet.equals(personToReminder)) {
           String reminderMessage = String.format(reminderEmailMessage, personToReminder.getFirstname(), personToGreet.getFirstname(),
               personToGreet.getLastName());
-          emailSender.sendEmail(personToReminder.getEmail(), reminderEmailSubject, reminderMessage);
-          smsSender.sendMessage(personToReminder.getPhoneNumber(), reminderMessage);
+          emailSender.sendEmail(new EmailDTO(personToReminder.getEmail(), reminderEmailSubject, reminderMessage));
+          smsSender.sendMessage(new SmsDTO(personToReminder.getPhoneNumber(), reminderMessage));
         }
       }
     }

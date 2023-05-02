@@ -1,8 +1,12 @@
 # Notes
 
+## Environment
+- JAVA 11
+- mvn 3.8.1
+
 ## Default configurations
 - If you want to start the spring boot app, the project will run with PersonRepositorySource = File as default
-- To run the project: in the Greetings-Reminders-project folder, you can run in terminal: java -jar greetings-reminders-0.0.1-SNAPSHOT.jar
+- To run the project: in the Greetings-Reminders project folder, you can run in terminal: java -jar greetings-reminders-0.0.1-SNAPSHOT.jar
 - The application will start and execute BirthdayGreetingUseCase and BirthdayReminderUseCase (just for testing and didactics purposes)
 - Sql table will be populated with default data, see scripts in import.sql file
 
@@ -12,13 +16,17 @@
 
 ## Database config
 - To change the database config, you can run in terminal: java -jar greetings-reminders-0.0.1-SNAPSHOT.jar "spring.datasource.url=jdbc:sqlite:{your/database/directory}?date_string_format=yyyy-MM-dd" --person.repository.source=SQLite
-Please add the "date_string_format=yyyy-MM-dd" due to SQLite limitations
+OBS: 
+  1. Please add the "date_string_format=yyyy-MM-dd" due to SQLite limitations 
+  2. If you are using windows SO your db file path should have this format "C:\your\database\directory"
 
 ## File config
-- Add your custom file in resources folder and run in terminal: java -jar greetings-reminders-0.0.1-SNAPSHOT.jar person.repository.file.directory=friend-list.txt
-The format is: last_name, first_name, date_of_birth ("-" separated), phone_number. Headers are not needed.
+- Add your custom file in resources folder and run in terminal: java -jar greetings-reminders-0.0.1-SNAPSHOT.jar --person.repository.file.directory=friend-list.txt
+The format is: last_name, first_name, date_of_birth ("-" separated, yyyy-MM-dd format), phone_number. Headers are not needed.
 e.g.:
 Doe, John, 1982-10-08, john.doe@foobar.com, +5901233
+- In property file person.repository.file.delimiter value is set to "," by default
+- You can change the date format in the date-format property, now is set "yyyy-MM-dd" by default 
 
 ## Test cases
 - See test's outputs in folder test-output

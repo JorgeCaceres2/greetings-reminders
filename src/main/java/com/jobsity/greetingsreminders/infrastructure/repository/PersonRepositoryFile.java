@@ -9,7 +9,9 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -20,7 +22,6 @@ public class PersonRepositoryFile implements PersonRepository {
 
   private final DateUtils dateUtils;
   private final CustomFileReader customFileReader;
-  private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
   private final Config config;
 
   public PersonRepositoryFile(DateUtils dateUtils, CustomFileReader customFileReader,
@@ -31,23 +32,12 @@ public class PersonRepositoryFile implements PersonRepository {
   }
 
   public List<Person> getPersonsToGreet() {
-    List<Person> friendList = getAllPersons();
-      List<Person> personsToGreet = new ArrayList<>();
-      LocalDate today = dateUtils.getCurrentDate();
-      for (Person person : friendList) {
-        LocalDate friendDateOfBirth = person.getDateOfBirth();
-        if (friendDateOfBirth.getMonthValue() == 2 && friendDateOfBirth.getDayOfMonth() == 29) {
-          friendDateOfBirth = friendDateOfBirth.minusDays(1);
-        }
+    List<Person> personList = getAllPersons().stream()
+        .filter(person -> person.isTodayHisBirthday(dateUtils.getCurrentDate()))
+        .collect(Collectors.toList());
 
-        if (friendDateOfBirth.getMonthValue() == today.getMonthValue()
-            && friendDateOfBirth.getDayOfMonth() == today.getDayOfMonth()) {
-          personsToGreet.add(person);
-        }
-      }
-      log.info("Returning persons to greet: {}", personsToGreet);
-      return personsToGreet;
-
+    log.info("Returning persons to greet: {}", personList);
+    return personList;
   }
 
   public List<Person> getAllPersons() {
@@ -57,17 +47,18 @@ public class PersonRepositoryFile implements PersonRepository {
       return personList;
     } catch (IOException e) {
       //Assuming that the exception is not mandatory to handle
-      log.error("Invalid File, returning an empty person list");
+      log.error("Invalid File, returning an empty person list", e);
       return List.of();
     }
   }
 
   private List<Person> getAllFriendsFromFile() throws IOException {
     String fileDirectory = config.getFileDirectory();
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(config.getDateFormat());
     List<String> lines = customFileReader.readFile(fileDirectory);
     List<Person> friendList = new ArrayList<>();
     for (String line : lines) {
-      String[] tokens = line.split(",");
+      String[] tokens = line.split(config.getFileDelimiter());
       Person person = Person.builder()
           .lastName(StringUtils.capitalize(tokens[0].trim()))
           .firstname(StringUtils.capitalize(tokens[1].trim()))
@@ -77,7 +68,7 @@ public class PersonRepositoryFile implements PersonRepository {
           .build();
       friendList.add(person);
     }
-    log.info("Returning results from file: {}", friendList);
+    log.info("Returning results from file: {}", List.of(friendList));
     return friendList;
   }
 }

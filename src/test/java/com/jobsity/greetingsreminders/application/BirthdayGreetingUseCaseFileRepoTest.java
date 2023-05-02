@@ -1,6 +1,6 @@
 package com.jobsity.greetingsreminders.application;
 
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -11,6 +11,8 @@ import com.jobsity.greetingsreminders.domain.factory.PersonRepositoryFactory;
 import com.jobsity.greetingsreminders.domain.service.BirthdayService;
 import com.jobsity.greetingsreminders.infrastructure.configuration.Config;
 import com.jobsity.greetingsreminders.infrastructure.configuration.TestConfig;
+import com.jobsity.greetingsreminders.infrastructure.dto.EmailDTO;
+import com.jobsity.greetingsreminders.infrastructure.dto.SmsDTO;
 import com.jobsity.greetingsreminders.infrastructure.factory.PersonRepositoryFactoryImpl;
 import com.jobsity.greetingsreminders.infrastructure.service.BirthdayServiceImpl;
 import com.jobsity.greetingsreminders.infrastructure.shared.CustomFileReader;
@@ -51,11 +53,13 @@ class BirthdayGreetingUseCaseFileRepoTest {
     when(config.getFileDirectory()).thenReturn(testConfig.getFileDirectory());
     when(config.getBirthdayMessage()).thenReturn(testConfig.getBirthdayMessage());
     when(config.getBirthdaySubject()).thenReturn(testConfig.getBirthdaySubject());
+    when(config.getFileDelimiter()).thenReturn(testConfig.getFileDelimiter());
+    when(config.getDateFormat()).thenReturn(testConfig.getDateFormat());
   }
 
   @Test
   void shouldSendBirthdayGreetingsFileRepo() {
-    LocalDate mockedDate = LocalDate.of(2023, 4, 19);
+    LocalDate mockedDate = LocalDate.of(2023, 4, 21);
     when(dateUtils.getCurrentDate()).thenReturn(mockedDate);
     birthdayGreetingUseCase.sendBirthdayGreetings();
     String expectedMail = "mike.tire@foobar.com";
@@ -63,8 +67,8 @@ class BirthdayGreetingUseCaseFileRepoTest {
     String expectedMessage = "Happy birthday, dear Mike!";
     String expectedPhoneNumber = "+532344";
 
-    verify(emailSender, times(1)).sendEmail(expectedMail, expectedSubject, expectedMessage);
-    verify(smsSender, times(1)).sendMessage(expectedPhoneNumber, expectedMessage);
+    verify(emailSender, times(1)).sendEmail(new EmailDTO(expectedMail, expectedSubject, expectedMessage));
+    verify(smsSender, times(1)).sendMessage(new SmsDTO(expectedPhoneNumber, expectedMessage));
   }
 
   @Test
@@ -77,8 +81,8 @@ class BirthdayGreetingUseCaseFileRepoTest {
     String expectedMessage = "Happy birthday, dear Mary!";
     String expectedPhoneNumber = "+594322";
 
-    verify(emailSender, times(1)).sendEmail(expectedMail, expectedSubject, expectedMessage);
-    verify(smsSender, times(1)).sendMessage(expectedPhoneNumber, expectedMessage);
+    verify(emailSender, times(1)).sendEmail(new EmailDTO(expectedMail, expectedSubject, expectedMessage));
+    verify(smsSender, times(1)).sendMessage(new SmsDTO(expectedPhoneNumber, expectedMessage));
   }
 
   @Test
@@ -87,8 +91,8 @@ class BirthdayGreetingUseCaseFileRepoTest {
     when(dateUtils.getCurrentDate()).thenReturn(mockedDate);
     birthdayGreetingUseCase.sendBirthdayGreetings();
 
-    verify(emailSender, never()).sendEmail(anyString(), anyString(), anyString());
-    verify(smsSender, never()).sendMessage(anyString(), anyString());
+    verify(emailSender, never()).sendEmail(any());
+    verify(smsSender, never()).sendMessage(any());
   }
 
   @Test
@@ -98,8 +102,8 @@ class BirthdayGreetingUseCaseFileRepoTest {
     when(config.getFileDirectory()).thenReturn("x.txt");
     birthdayGreetingUseCase.sendBirthdayGreetings();
 
-    verify(emailSender, never()).sendEmail(anyString(), anyString(), anyString());
-    verify(smsSender, never()).sendMessage(anyString(), anyString());
+    verify(emailSender, never()).sendEmail(any());
+    verify(smsSender, never()).sendMessage(any());
   }
 
 }

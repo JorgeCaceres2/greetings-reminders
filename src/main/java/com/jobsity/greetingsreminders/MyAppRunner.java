@@ -19,7 +19,7 @@ public class MyAppRunner implements ApplicationRunner {
   }
 
   @Override
-  public void run(ApplicationArguments args) throws Exception {
+  public void run(ApplicationArguments args) {
       birthdayGreetingUseCase.sendBirthdayGreetings();
       birthdayReminderUseCase.sendBirthdayReminders();
   }

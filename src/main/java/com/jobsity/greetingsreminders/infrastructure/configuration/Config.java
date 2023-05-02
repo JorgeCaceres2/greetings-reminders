@@ -1,26 +1,29 @@
 package com.jobsity.greetingsreminders.infrastructure.configuration;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
-@ConfigurationProperties
-@Data
-@Component
+
+@Getter
+@Setter
+@Configuration
+@ConfigurationProperties(prefix = "notification")
 public class Config {
 
+  private String birthdayMessage;
+  private String birthdaySubject;
+  private String reminderMessage;
+  private String reminderSubject;
   @Value( "${person.repository.source}")
   private String personRepositorySource;
-  @Value( "${notification.birthdayMessage}")
-  private String birthdayMessage;
-  @Value( "${notification.birthdaySubject}")
-  private String birthdaySubject;
-  @Value( "${notification.reminderMessage}")
-  private String reminderMessage;
-  @Value( "${notification.reminderSubject}")
-  private String reminderSubject;
   @Value( "${person.repository.file.directory}")
   private String fileDirectory;
+  @Value( "${person.repository.file.delimiter}")
+  private String fileDelimiter;
+  @Value("${date-format}")
+  private String dateFormat;
 
 }

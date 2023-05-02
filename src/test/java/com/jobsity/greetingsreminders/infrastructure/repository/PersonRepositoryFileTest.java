@@ -26,6 +26,8 @@ class PersonRepositoryFileTest {
   public void initMocks() {
     personRepositoryFile = new PersonRepositoryFile(dateUtils, customFileReader, config);
     when(config.getFileDirectory()).thenReturn("friend-list.txt");
+    when(config.getDateFormat()).thenReturn("yyyy-MM-dd");
+    when(config.getFileDelimiter()).thenReturn(",");
   }
 
   @Test

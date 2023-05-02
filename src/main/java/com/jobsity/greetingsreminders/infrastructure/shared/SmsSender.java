@@ -1,5 +1,6 @@
 package com.jobsity.greetingsreminders.infrastructure.shared;
 
+import com.jobsity.greetingsreminders.infrastructure.dto.SmsDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -7,9 +8,9 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class SmsSender {
 
-  public void sendMessage (String phoneNumber, String message) {
+  public void sendMessage (SmsDTO smsDTO) {
     //add the logic to send the sms...
-    log.info("Text message sent to: {}, message: {}", phoneNumber, message);
+    log.info("Text message sent to: {}, message: {}", smsDTO.getPhoneNumber(), smsDTO.getMessage());
   }
 
 }
